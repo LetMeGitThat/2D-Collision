@@ -15,64 +15,75 @@ class Object {
     void Draw() { DrawRectangle(position.x, position.y, size.x, size.y, color); }
 
     void Update(Object obj) {
-        if (!CheckCollisionRecs({ position.x + velocity.x, position.y + velocity.y, size.x, size.y }, { obj.GetPosition().x, obj.GetPosition().y, obj.GetSize().x, obj.GetSize().y })) {
-            position.x += velocity.x;
-            position.y += velocity.y;
+        float newPosX = position.x + velocity.x;
+        float newPosY = position.y + velocity.y;
+
+        if (!CheckCollisionRecs({ newPosX, newPosY, size.x, size.y }, { obj.GetPosition().x, obj.GetPosition().y, obj.GetSize().x, obj.GetSize().y })) {
+            position.x = newPosX;
+            position.y = newPosY;
         }
     }
 
     Object(Vector2 pos, Vector2 Size, Color clr) : position(pos), size(Size), color(clr) {}
 };
 
+void Input(Object& player) {
+    if (IsKeyPressed(KEY_W)) {
+        player.velocity.y += -1;
+    }
+    if (IsKeyPressed(KEY_A)) {
+        player.velocity.x += -1;
+    }
+    if (IsKeyPressed(KEY_S)) {
+        player.velocity.y += 1;
+    }
+    if (IsKeyPressed(KEY_D)) {
+        player.velocity.x += 1;
+    }
+
+    if (IsKeyReleased(KEY_W)) {
+        player.velocity.y += 1;
+    }
+    if (IsKeyReleased(KEY_A)) {
+        player.velocity.x += 1;
+    }
+    if (IsKeyReleased(KEY_S)) {
+        player.velocity.y += -1;
+    }
+    if (IsKeyReleased(KEY_D)) {
+        player.velocity.x += -1;
+    }
+}
+
 const short int WIDTH = 900;
 const short int HEIGHT = 600;
 const char* TITLE = "Collision Test";
 const short int FPS = 60;
 
-void Input() {
+Object player({100, 100}, {100, 100}, RED);
+Object wall({500, 150}, {100, 200}, BLUE);
 
+void Update() {
+    player.Update(wall);
+}
+
+void Draw() {
+    player.Draw();
+    wall.Draw();
 }
 
 int main() {
     InitWindow(WIDTH, HEIGHT, TITLE);
     SetTargetFPS(FPS);
 
-    Object player({100, 100}, {100, 100}, RED);
-    Object wall({500, 150}, {100, 200}, BLUE);
-
     while (WindowShouldClose() == false) {
         BeginDrawing();
 
-        player.Update(wall);
+        Update();
+        Input(player);
 
-        if (IsKeyPressed(KEY_W)) {
-            player.velocity.y += -1;
-        }
-        if (IsKeyPressed(KEY_A)) {
-            player.velocity.x += -1;
-        }
-        if (IsKeyPressed(KEY_S)) {
-            player.velocity.y += 1;
-        }
-        if (IsKeyPressed(KEY_D)) {
-            player.velocity.x += 1;
-        }
+        Draw();
 
-        if (IsKeyReleased(KEY_W)) {
-            player.velocity.y += 1;
-        }
-        if (IsKeyReleased(KEY_A)) {
-            player.velocity.x += 1;
-        }
-        if (IsKeyReleased(KEY_S)) {
-            player.velocity.y += -1;
-        }
-        if (IsKeyReleased(KEY_D)) {
-            player.velocity.x += -1;
-        }
-
-        player.Draw();
-        wall.Draw();
         ClearBackground(WHITE);
 
         EndDrawing();
