@@ -10,12 +10,15 @@ class Object {
     public:
     Vector2 velocity;
     Vector2 GetPosition() { return position; }
+    Vector2 GetSize() { return size; }
 
     void Draw() { DrawRectangle(position.x, position.y, size.x, size.y, color); }
 
-    void Update() {
-        position.x += velocity.x;
-        position.y += velocity.y;
+    void Update(Object obj) {
+        if (!CheckCollisionRecs({ position.x + velocity.x, position.y + velocity.y, size.x, size.y }, { obj.GetPosition().x, obj.GetPosition().y, obj.GetSize().x, obj.GetSize().y })) {
+            position.x += velocity.x;
+            position.y += velocity.y;
+        }
     }
 
     Object(Vector2 pos, Vector2 Size, Color clr) : position(pos), size(Size), color(clr) {}
@@ -35,12 +38,12 @@ int main() {
     SetTargetFPS(FPS);
 
     Object player({100, 100}, {100, 100}, RED);
-    Object wall({300, 300}, {100, 200}, BLUE);
+    Object wall({500, 150}, {100, 200}, BLUE);
 
     while (WindowShouldClose() == false) {
         BeginDrawing();
 
-        player.Update();
+        player.Update(wall);
 
         if (IsKeyPressed(KEY_W)) {
             player.velocity.y += -1;
