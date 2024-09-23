@@ -70,6 +70,8 @@ void Update() {
 void Draw() {
     player.Draw();
     wall.Draw();
+
+    DrawFPS(10, 10);
 }
 
 int main() {
